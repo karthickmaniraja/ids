@@ -1,0 +1,136 @@
+Intrusion Detection System (IDS) built using a variety of tools, libraries, and frameworks in Python. Below is a detailed breakdown of the tools and frameworks used, categorized by their purpose within the system:
+
+1. Web Application Framework
+Flask:
+A lightweight Python web framework used to create the RESTful API endpoints (e.g., /login, /predict, /start-packet-capture).
+Handles HTTP requests and responses, serving as the backbone of the web server.
+Example: app = Flask(__name__) initializes the Flask application.
+Flask-SocketIO:
+An extension of Flask for real-time bidirectional communication using WebSockets.
+Used to emit real-time alerts (real-time-alert) and packet data (real-time-data) to connected clients.
+Example: socketio = SocketIO(app) sets up WebSocket functionality.
+Flask-CORS:
+A Flask extension to handle Cross-Origin Resource Sharing (CORS), allowing the backend to communicate with a frontend hosted at a different origin (e.g., http://localhost:5173).
+Example: CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}) enables CORS.
+2. Network Packet Capture and Analysis
+Scapy:
+A powerful Python library for packet manipulation and network sniffing.
+Used to capture packets (sniff), parse packet fields (e.g., IP, TCP, UDP), and extract features for analysis.
+Example: sniff(iface=interface, prn=predict_packet, store=False) captures packets in real-time.
+3. Machine Learning and Data Processing
+NumPy:
+A library for numerical computations in Python.
+Used for array operations, such as handling feature vectors and model predictions.
+Example: np.zeros(len(X), dtype=int) creates an array for predictions.
+Pandas:
+A data manipulation library used to structure features as DataFrames for model input.
+Example: pd.DataFrame([features]) constructs feature sets for prediction.
+Joblib:
+A library for saving and loading Python objects, particularly machine learning models and preprocessors.
+Used to load pre-trained models (binary_model, multi_model), encoders (label_encoder), and scalers (scaler).
+Example: joblib.load(BINARY_MODEL_PATH) loads the binary classification model.
+Scikit-learn (implied):
+Although not explicitly imported, the use of predict_proba, transform, and pickled models/scalers suggests Scikit-learn was used to train the machine learning models and preprocessors (binary_model, multi_model, scaler, cat_encoders).
+Likely used for classification (e.g., Random Forest, SVM) and feature scaling/encoding.
+4. Cryptography and Security
+PyCryptodome (Crypto):
+A cryptographic library providing AES and RSA encryption.
+Used for:
+AES-GCM encryption of flow data (FLOW_AES_KEY, FLOW_NONCE).
+RSA key management and decryption (PKCS1_OAEP).
+Examples:
+cipher = AES.new(FLOW_AES_KEY, AES.MODE_GCM, nonce=FLOW_NONCE) encrypts flow data.
+RSA.import_key(f.read()) loads the RSA private key.
+bcrypt:
+A password-hashing library for securely storing user passwords.
+Used to hash passwords before storing them in MongoDB.
+Example: bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()) hashes a password.
+PyJWT (jwt):
+A library for encoding and decoding JSON Web Tokens (JWT).
+Used for user authentication and role-based access control (RBAC).
+Example: jwt.encode({'user_id': user_id, 'role': role, 'exp': expiration_time}, SECRET_KEY) generates a JWT.
+hashlib:
+A Python standard library module for cryptographic hashing (e.g., SHA-256).
+Used to anonymize sensitive data.
+Example: hashlib.sha256(data.encode()).hexdigest() anonymizes user IDs.
+base64:
+A standard library module for encoding/decoding binary data as text.
+Used to encode encrypted flow data and tags for storage.
+Example: base64.b64encode(ciphertext).decode('utf-8') encodes AES-encrypted data.
+5. Database
+PyMongo:
+A Python driver for MongoDB, used to interact with the MongoDB database.
+Stores user data (users_collection), activity logs (activity_logs), and login history (user_login_history).
+Example: client = MongoClient("mongodb://localhost:27017/") connects to MongoDB.
+6. System Monitoring
+psutil:
+A cross-platform library for retrieving system resource usage (e.g., CPU, memory).
+Used to monitor system performance and trigger alerts for high usage.
+Example: psutil.cpu_percent(interval=1) measures CPU usage.
+7. Logging and Debugging
+logging:
+A Python standard library module for logging events and errors.
+Configured to log to both console and a file (app.log) with timestamps and levels (e.g., DEBUG, INFO, ERROR).
+Example: logging.info(f"Prediction for flow {flow_key}: {label_display}") logs predictions.
+8. Time and Date Handling
+datetime:
+A standard library module for working with dates and times.
+Used for timestamps in logs, alerts, and JWT expiration.
+Example: datetime.datetime.now() generates current timestamps.
+pytz:
+A library for handling time zones.
+Used to convert UTC timestamps to a specific timezone (e.g., Asia/Kolkata).
+Example: pytz.timezone('Asia/Kolkata') sets the timezone for alerts.
+9. Concurrency and Multithreading
+threading:
+A standard library module for running tasks concurrently.
+Used to start background threads for packet capture, performance monitoring, and data generation.
+Example: Thread(target=capture_packets, args=(interface,)) runs packet capture in a separate thread.
+time:
+A standard library module for timing operations.
+Used for flow timeouts and sleep intervals in simulations.
+Example: time.sleep(1) pauses execution in real-time data generation.
+10. Miscellaneous Utilities
+os:
+A standard library module for interacting with the operating system.
+Used to handle file paths and environment variables.
+Example: os.path.join(BASE_DIR, 'binary_model.pkl') constructs file paths.
+json:
+A standard library module for JSON encoding/decoding.
+Used to serialize/deserialize flow data and API payloads.
+Example: json.dumps(flow_data_to_encrypt) converts flow data to JSON.
+random:
+A standard library module for generating random numbers.
+Used in simulated data generation (e.g., random IPs, packet lengths).
+Example: random.randint(100, 150) generates random IP segments.
+collections.defaultdict:
+A standard library module providing a dictionary with default values.
+Used to track flow statistics (e.g., dst_host_count).
+Example: defaultdict(int) initializes a counter dictionary.
+functools.wraps:
+A standard library module for preserving function metadata in decorators.
+Used in the role_required decorator for RBAC.
+Example: @wraps(f) ensures the wrapper retains the original function’s metadata.
+11. File and Path Management
+os.path:
+A submodule of os for manipulating file paths.
+Used to define paths to models, keys, and logs relative to the script’s location.
+Example: BASE_DIR = os.path.dirname(os.path.abspath(__file__)) gets the script’s directory.
+Summary of Tools and Frameworks
+Category	Tools/Frameworks
+Web Framework	Flask, Flask-SocketIO, Flask-CORS
+Packet Capture	Scapy
+Machine Learning	NumPy, Pandas, Joblib, Scikit-learn (implied)
+Cryptography	PyCryptodome (Crypto), bcrypt, PyJWT (jwt), hashlib, base64
+Database	PyMongo (MongoDB)
+System Monitoring	psutil
+Logging	logging
+Time Handling	datetime, pytz
+Concurrency	threading, time
+Utilities	os, json, random, collections.defaultdict, functools.wraps
+File/Path Management	os.path
+Notes
+Implied Dependencies: The code assumes pre-trained models and preprocessors (e.g., binary_model.pkl, scaler.pkl) were created with Scikit-learn or a similar ML framework, though it’s not explicitly imported in the runtime code.
+Custom Logic: Some functionality (e.g., combined_predict, extract_features) is custom-built, relying on the above libraries for core operations.
+Environment: The code runs in a Python environment (likely Python 3.x) and requires MongoDB to be installed and running locally (mongodb://localhost:27017/).
+This IDS leverages a robust combination of tools for network security, real-time communication, and machine learning, making it a versatile system that can be adapted to various use cases with appropriate modifications.
